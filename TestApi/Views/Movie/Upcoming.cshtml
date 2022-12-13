@@ -1,0 +1,28 @@
+﻿@model Result
+
+@{
+    ViewBag.Title = "Upcoming";
+}
+
+<h2>Upcoming</h2>
+<div class="row">
+
+    @foreach (var i in Model.results)
+    {
+        <div class="col-md-3 col-xs-6 border-primary mb-3">
+            <div class="card mb-4" style="max-width: 525px;">
+                <div class="row g-2">
+                    <div>
+                        <a asp-action="MovieDetails" asp-route-id="@i.id">
+                            <img class="text-center" src="@i.poster_path" width="100%" style="border-radius:20px" />
+                            <h4 class="text-center">@i.title</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+
