@@ -1,0 +1,13 @@
+﻿@model Movie
+
+@{
+    ViewBag.Title = Model.title;
+}
+
+<div class="row">
+    <img src="@Model.backdrop_path" width="100%" alt="@Model.title">
+    <h2><b>Name:</b> @Model.title</h2>
+    <h4><b>Release Date:</b> @Model.release_date</h4>
+    <h4><b>Overview:</b> @Model.overview</h4>
+    <h4><b>Vote Avarage:</b> @Model.vote_average/10</h4>
+</div>
