@@ -1,15 +1,14 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace TestApi.Models
 {
-    public class Movie
+    public class Series
     {
         [DisplayName("Id")]
         public int id { get; set; }
 
         [DisplayName("Title")]
-        public string title { get; set; }
+        public string name { get; set; }
 
         [DisplayName("Poster Path")]
         public string poster_path { get; set; }
@@ -18,7 +17,7 @@ namespace TestApi.Models
         public string backdrop_path { get; set; }
 
         [DisplayName("Release Date")]
-        public string release_date { get; set; }
+        public string first_air_date { get; set; }
 
         [DisplayName("Overview")]
         public string overview { get; set; }
