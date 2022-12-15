@@ -6,6 +6,12 @@
 
 <h2>Popular Series</h2>
 <div class="row">
+    <form class="form-check-inline my-2 my-lg-0" asp-controller="Series" asp-action="Filter" style="padding-right: 25px;">
+        <input name="searchString" type="text" class="form-control" placeholder="Search for a series..." aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button class="btn btn-outline-success my-2 my-lg-0 float-end" type="submit" style="margin-top: 10px;"><i class="bi bi-search"> Search</i></button>
+    </form>
+</div>
+<div class="row">
 
     @foreach (var i in Model.results)
     {

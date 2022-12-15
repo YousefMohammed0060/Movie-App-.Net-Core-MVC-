@@ -6,6 +6,14 @@
 
 <h2>Popular Movies</h2>
 <div class="row">
+    <form class="form-check-inline my-2 my-lg-0" asp-controller="Movie" asp-action="Filter" style="padding-right: 25px;">
+        <input name="searchString" type="text" class="form-control" placeholder="Search for a movie..." aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button class="btn btn-outline-success my-2 my-lg-0 float-end" type="submit" style="margin-top: 10px;"><i class="bi bi-search"> Search</i></button>
+    </form>
+</div>
+
+
+<div class="row">
 
     @foreach (var i in Model.results)
     {
@@ -14,8 +22,8 @@
                 <div class="row g-2">
                     <div>
                         <a asp-action="MovieDetails" asp-route-id="@i.id">
-                        <img class="text-center" src="@i.poster_path" width="100%" style="border-radius:20px"/>
-                        <h4 class="text-center">@i.title</h4>
+                            <img class="text-center" src="@i.poster_path" width="100%" style="border-radius:20px" />
+                            <h4 class="text-center">@i.title</h4>
                         </a>
                     </div>
                 </div>

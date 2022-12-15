@@ -41,6 +41,16 @@ namespace TestApi.Controllers
             return View(result);
         }
 
+        public IActionResult Filter(string searchString)
+        {
+            result = getPopular();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                return View("Index", getSearch(searchString));
+            }
+            return View("Index", result);
+        }
+
         // To get movie details 
         public IActionResult MovieDetails(int id)
         {
@@ -100,6 +110,18 @@ namespace TestApi.Controllers
         private Result getUpcoming()
         {
             HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/upcoming?api_key=52a18783ed514602a5facb15a0177e61").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                result = JsonConvert.DeserializeObject<Result>(data);
+            }
+            return addBase(result);
+        }
+
+        // To get upcoming movies
+        private Result getSearch(string name)
+        {
+            HttpResponseMessage response = client.GetAsync(BASE_URL + "search/movie?api_key=52a18783ed514602a5facb15a0177e61&query=" + name).Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;

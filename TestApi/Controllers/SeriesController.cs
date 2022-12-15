@@ -40,6 +40,16 @@ namespace TestApi.Controllers
             return View(result);
         }
 
+        public IActionResult Filter(string searchString)
+        {
+            result = getPopular();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                return View("Index", getSearch(searchString));
+            }
+            return View("Index", result);
+        }
+
         // To get series details  
         public IActionResult SeriesDetails(int id)
         {
@@ -97,6 +107,18 @@ namespace TestApi.Controllers
         private SeriesResult getOnTheAir()
         {
             HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/on_the_air?api_key=52a18783ed514602a5facb15a0177e61").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                result = JsonConvert.DeserializeObject<SeriesResult>(data);
+            }
+            return addBase(result);
+        }
+
+        // To get search for series
+        private SeriesResult getSearch(string name)
+        {
+            HttpResponseMessage response = client.GetAsync(BASE_URL + "search/tv?api_key=52a18783ed514602a5facb15a0177e61&query=" + name).Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
