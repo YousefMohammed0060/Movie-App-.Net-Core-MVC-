@@ -1,7 +1,7 @@
 ﻿namespace TestApi.Models
 {
-    public class Result
+    public class Result<T>
     {
-        public Movie [] results { get; set; }
+        public T [] results { get; set; }
     }
 }

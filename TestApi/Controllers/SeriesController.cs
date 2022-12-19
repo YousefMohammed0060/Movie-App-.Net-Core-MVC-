@@ -9,12 +9,12 @@ namespace TestApi.Controllers
     public class SeriesController : Controller
     {
         Series series;
-        GetData<SeriesResult,Series> data;
+        GetData<Result<Series>,Series> data;
 
         public SeriesController()
         {
             series = new Series();
-            data = new GetData<SeriesResult, Series>();
+            data = new GetData<Result<Series>, Series>();
         }
 
         public IActionResult Index()
@@ -61,7 +61,7 @@ namespace TestApi.Controllers
 
 
         // To add baseURL to poster and backdrop
-        private SeriesResult addBase(SeriesResult result)
+        private Result<Series> addBase(Result<Series> result)
         {
             foreach (var item in result.results)
             {

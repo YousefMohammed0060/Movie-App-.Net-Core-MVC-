@@ -11,11 +11,11 @@ namespace TestApi.Controllers
     {
         
         Movie movie;
-        GetData<Result,Movie> data;
+        GetData<Result<Movie>, Movie> data;
         public MovieController()
         {
             movie = new Movie();
-            data = new GetData<Result, Movie>();
+            data = new GetData<Result<Movie>, Movie>();
         }
 
         public IActionResult Index()
@@ -60,7 +60,7 @@ namespace TestApi.Controllers
         }
 
         // To add baseURL to poster and backdrop
-        private Result addBase(Result result)
+        private Result<Movie> addBase(Result<Movie> result)
         {
             foreach (var item in result.results)
             {
