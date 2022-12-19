@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Movies_and_Series.Data;
 using Newtonsoft.Json;
 using System.Xml.Linq;
 using TestApi.Models;
@@ -7,48 +8,44 @@ namespace TestApi.Controllers
 {
     public class SeriesController : Controller
     {
-        static Uri BASE_URL = new Uri("https://api.themoviedb.org/3/");
-        HttpClient client;
-        SeriesResult result;
         Series series;
+        GetData<SeriesResult,Series> data;
 
         public SeriesController()
         {
-            client = new HttpClient();
-            client.BaseAddress = BASE_URL;
             series = new Series();
-            result = new SeriesResult();
+            data = new GetData<SeriesResult, Series>();
         }
 
         public IActionResult Index()
         {
             
-            return View(getSeries("tv/popular?api_key=52a18783ed514602a5facb15a0177e61"));
+            return View(addBase(data.apiData("tv/popular?api_key=52a18783ed514602a5facb15a0177e61")));
         }
 
         public IActionResult AiringToday()
         {
-            return View(getSeries("tv/airing_today?api_key=52a18783ed514602a5facb15a0177e61"));
+            return View(addBase(data.apiData("tv/airing_today?api_key=52a18783ed514602a5facb15a0177e61")));
         }
 
         public IActionResult TopRated()
         {
-            return View(getSeries("tv/top_rated?api_key=52a18783ed514602a5facb15a0177e61"));
+            return View(addBase(data.apiData("tv/top_rated?api_key=52a18783ed514602a5facb15a0177e61")));
         }
 
         public IActionResult OnTheAir()
         {
             
-            return View(getSeries("tv/on_the_air?api_key=52a18783ed514602a5facb15a0177e61"));
+            return View(addBase(data.apiData("tv/on_the_air?api_key=52a18783ed514602a5facb15a0177e61")));
         }
 
         public IActionResult Filter(string searchString)
         {
             if (!string.IsNullOrEmpty(searchString))
             {
-                return View("Index", getSeries("search/tv?api_key=52a18783ed514602a5facb15a0177e61&query=" + searchString));
+                return View("Index", addBase(data.apiData("search/tv?api_key=52a18783ed514602a5facb15a0177e61&query=" + searchString)));
             }
-            return View("Index", getSeries("tv/popular?api_key=52a18783ed514602a5facb15a0177e61"));
+            return View("Index", addBase(data.apiData("tv/popular?api_key=52a18783ed514602a5facb15a0177e61")));
         }
 
 
@@ -56,28 +53,12 @@ namespace TestApi.Controllers
         // To get series details  
         public IActionResult SeriesDetails(int id)
         {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/" + id + "?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                series = JsonConvert.DeserializeObject<Series>(data);
-                series.poster_path = "https://image.tmdb.org/t/p/original" + series.poster_path;
-                series.backdrop_path = "https://image.tmdb.org/t/p/original" + series.backdrop_path;
-            }
+            series = data.getSingle("tv/" + id + "?api_key=52a18783ed514602a5facb15a0177e61");
+            series.poster_path = "https://image.tmdb.org/t/p/original" + series.poster_path;
+            series.backdrop_path = "https://image.tmdb.org/t/p/original" + series.backdrop_path;
             return View(series);
         }
 
-        // To get Series
-        private SeriesResult getSeries(string seriesPath)
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + seriesPath).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<SeriesResult>(data);
-            }
-            return addBase(result);
-        }
 
         // To add baseURL to poster and backdrop
         private SeriesResult addBase(SeriesResult result)
