@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
+using System.Xml.Linq;
 using TestApi.Models;
 
 namespace TestApi.Controllers
@@ -9,52 +10,54 @@ namespace TestApi.Controllers
     {
         static Uri BASE_URL = new Uri("https://api.themoviedb.org/3/");
         HttpClient client;
-        Result result = new Result();
         Movie movie;
+        Result result;
         public MovieController()
         {
             client= new HttpClient();
             client.BaseAddress = BASE_URL;
+            movie = new Movie();
+            result = new Result();
         }
 
         public IActionResult Index()
-        {
-            result = getPopular();
-            return View(result);
+        {           
+            return View(getMovies("movie/popular?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult NowPlaying()
         {
-            result = getNowPlaying();
-            return View(result);
+            
+            return View(getMovies("movie/now_playing?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult TopRated()
         {
-            result = getTopRated();
-            return View(result);
+            
+            return View(getMovies("movie/top_rated?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult Upcoming()
         {
-            result = getUpcoming();
-            return View(result);
+            
+            return View(getMovies("movie/upcoming?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult Filter(string searchString)
         {
-            result = getPopular();
             if (!string.IsNullOrEmpty(searchString))
             {
-                return View("Index", getSearch(searchString));
+                return View("Index", getMovies("search/movie?api_key=52a18783ed514602a5facb15a0177e61&query=" + searchString));
             }
-            return View("Index", result);
+            return View("Index", getMovies("movie/popular?api_key=52a18783ed514602a5facb15a0177e61"));
         }
+
+
+
 
         // To get movie details 
         public IActionResult MovieDetails(int id)
         {
-            Movie movie = new Movie();
             HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/"+id+"?api_key=52a18783ed514602a5facb15a0177e61").Result;
             if (response.IsSuccessStatusCode)
             {
@@ -66,62 +69,10 @@ namespace TestApi.Controllers
             return View(movie);
         }
 
-
-
-        
-        // To get popular movies
-        private Result getPopular()
+        // To get movies
+        private Result getMovies(string moviePath)
         {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/popular?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<Result>(data);
-            }
-            return addBase(result);
-        }
-
-
-        // To get now playing movies
-        private Result getNowPlaying()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/now_playing?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<Result>(data);
-            }
-            return addBase(result);
-        }
-
-        // To get top rated movies
-        private Result getTopRated()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/top_rated?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<Result>(data);
-            }
-            return addBase(result);
-        }
-        
-        // To get upcoming movies
-        private Result getUpcoming()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "movie/upcoming?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<Result>(data);
-            }
-            return addBase(result);
-        }
-
-        // To get upcoming movies
-        private Result getSearch(string name)
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "search/movie?api_key=52a18783ed514602a5facb15a0177e61&query=" + name).Result;
+            HttpResponseMessage response = client.GetAsync(BASE_URL +moviePath ).Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;

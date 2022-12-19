@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Xml.Linq;
 using TestApi.Models;
 
 namespace TestApi.Controllers
@@ -8,52 +9,53 @@ namespace TestApi.Controllers
     {
         static Uri BASE_URL = new Uri("https://api.themoviedb.org/3/");
         HttpClient client;
-        SeriesResult result = new SeriesResult();
+        SeriesResult result;
         Series series;
 
         public SeriesController()
         {
             client = new HttpClient();
             client.BaseAddress = BASE_URL;
+            series = new Series();
+            result = new SeriesResult();
         }
 
         public IActionResult Index()
         {
-            result = getPopular();
-            return View(result);
+            
+            return View(getSeries("tv/popular?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult AiringToday()
         {
-            result = getAiringToday();
-            return View(result);
+            return View(getSeries("tv/airing_today?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult TopRated()
         {
-            result = getTopRated();
-            return View(result);
+            return View(getSeries("tv/top_rated?api_key=52a18783ed514602a5facb15a0177e61"));
         }
+
         public IActionResult OnTheAir()
         {
-            result = getOnTheAir();
-            return View(result);
+            
+            return View(getSeries("tv/on_the_air?api_key=52a18783ed514602a5facb15a0177e61"));
         }
 
         public IActionResult Filter(string searchString)
         {
-            result = getPopular();
             if (!string.IsNullOrEmpty(searchString))
             {
-                return View("Index", getSearch(searchString));
+                return View("Index", getSeries("search/tv?api_key=52a18783ed514602a5facb15a0177e61&query=" + searchString));
             }
-            return View("Index", result);
+            return View("Index", getSeries("tv/popular?api_key=52a18783ed514602a5facb15a0177e61"));
         }
+
+
 
         // To get series details  
         public IActionResult SeriesDetails(int id)
         {
-            Series series = new Series();
             HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/" + id + "?api_key=52a18783ed514602a5facb15a0177e61").Result;
             if (response.IsSuccessStatusCode)
             {
@@ -65,60 +67,10 @@ namespace TestApi.Controllers
             return View(series);
         }
 
-        // To get popular series
-        private SeriesResult getPopular()
+        // To get Series
+        private SeriesResult getSeries(string seriesPath)
         {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/popular?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<SeriesResult>(data);
-            }
-            return addBase(result);
-        }
-
-
-        // To get airing today series
-        private SeriesResult getAiringToday()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/airing_today?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<SeriesResult>(data);
-            }
-            return addBase(result);
-        }
-
-
-        // To get top rated series
-        private SeriesResult getTopRated()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/top_rated?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<SeriesResult>(data);
-            }
-            return addBase(result);
-        }
-
-        // To get on the air series
-        private SeriesResult getOnTheAir()
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "tv/on_the_air?api_key=52a18783ed514602a5facb15a0177e61").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                result = JsonConvert.DeserializeObject<SeriesResult>(data);
-            }
-            return addBase(result);
-        }
-
-        // To get search for series
-        private SeriesResult getSearch(string name)
-        {
-            HttpResponseMessage response = client.GetAsync(BASE_URL + "search/tv?api_key=52a18783ed514602a5facb15a0177e61&query=" + name).Result;
+            HttpResponseMessage response = client.GetAsync(BASE_URL + seriesPath).Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
